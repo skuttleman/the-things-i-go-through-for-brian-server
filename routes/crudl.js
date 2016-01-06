@@ -1,4 +1,4 @@
-var knex = require('knex')(require('../knexfile.js')[process.env.ENVIRONMENT || 'development']);
+var knex = require('knex')(require('../knexfile.js')[process.env.NODE_ENV || 'development']);
 module.exports = function(table, keys) {
   var route = require('express').Router();
 
@@ -15,7 +15,7 @@ module.exports = function(table, keys) {
   route.get('/:id', function(request, response) {
     knex(table).where({ id: request.params.id })
     .then(function(rows) {
-      response.json({ [table]: rows[0] });
+      response.json({ [table]: rows });
     });
   });
 
@@ -32,7 +32,7 @@ module.exports = function(table, keys) {
   route.delete('/:id', function(request, response) {
     knex(table).where({ id: request.params.id }).del()
     .then(function(id) {
-      response.json({ success: true, message: ['Record', id, 'deleted from table', table].join(' ') });
+      response.json({ success: true, message: [id, 'record deleted from table:', table].join(' ') });
     });
   });
 

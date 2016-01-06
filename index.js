@@ -6,14 +6,19 @@ try {
 var express = require('express'), app = express();
 var bodyParser = require('body-parser');
 var cors = require('cors');
-var passport = require('passport');
-var LocalStrategy = require('passport-local');
+var cookieParser = require('cookie-parser');
+var authorize = require('./authorize');
+var crudl = require('./routes/crudl');
+
+
 
 app.use(bodyParser.urlencoded({ extended: false }));
-app.use(cors());
+app.use(cookieParser(process.env.COOKIE_PARSER_SECRET || 'keyboard cat'));
+app.use(cors({ credentials: true, allowedHeaders: ['Authorization'], exposedHeaders: ['Authorization'], origin: process.env.CLIENT_URL || 'http://localhost:8080' }));
 
 
-var crudl = require('./routes/crudl');
+
+app.use(authorize);
 app.use('/broncos', crudl('broncos', [
   { name: 'name', type: 'string' },
   { name: 'favorite_color', type: 'string' },
